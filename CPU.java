@@ -1,4 +1,4 @@
-package simulation;
+
 
 class CPU {
 	public boolean BusyOrNot;
@@ -27,7 +27,7 @@ class CPU {
 		*/
 		}
 
-	public static void  BubbleSort(Process process) {
+	public static void  BubbleSort(PCB process) {
 	}
 
 	public Boolean CPUisBusy()
