@@ -1,6 +1,14 @@
 import java.io.BufferedReader;
 import java.io.File;
-import java.util.*; 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
+
+import javafx.scene.shape.Line; 
 
 class OS {
 	public CPU cpu;
@@ -12,6 +20,29 @@ class OS {
 	public ArrayList<PCB> Wait_Queue;
 	public ArrayList<PCB> Terminated_Queue;
 
+	public void CreateProcess() throws NumberFormatException, IOException
+	{
+		/* 
+		 * Reads the file 
+		 * separates the four fields in the text document
+		 * takes the IOBurst and turns it into an array
+		 */
+		String line; 
+		BufferedReader read = new BufferedReader(new FileReader ("file"));
+		while ((line = read.readLine()) != null)
+		{
+			String[] words = line.split("," );
+			int ID = Integer.parseInt(words[0]); 
+			int priority = Integer.parseInt(words[2]); 
+			int arrival = Integer.parseInt(words[1]); 
+			String IOburst = words[3]; 
+			
+			ArrayList<String> burst = new ArrayList<>(); 
+			burst.add(IOburst); 
+		}
+		
+	}
+	public void FCFS(Process process) {
 	// Read the txt input file, for each line, create a process and record its
 	// arrival
 	// time
