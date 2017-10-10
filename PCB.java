@@ -71,5 +71,9 @@ class PCB {
 		this.PositionOfNextInstructionToExecute++;
 	}
 	
+	public int getPriority(){
+		return this.Priority;
+	}
+	
 	//TODO make more methods for acquiring data
 }
