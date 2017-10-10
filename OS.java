@@ -275,7 +275,7 @@ class OS {
 		Ready_Queue.add(head);
 	}
 	//this calculates average for a double array
-		public double avg(double[] c){
+		public static double avg(double[] c){
 			//create variables for averaging
 			double total = 0;
 			int members = c.length;
@@ -290,7 +290,7 @@ class OS {
 			return avg;
 		}
 		//this calculates standard deviation for a double array
-		public double standardDev(double[] c){
+		public static double standardDev(double[] c){
 			//create all variables needed for calculating standard Deviation
 			double standardDev = 0.0;
 			int arrayLength = c.length;
@@ -308,7 +308,7 @@ class OS {
 			return standardDev;
 		}
 		//this method calculates, prints, and returns the standard deviation of the latency times for all finished processes
-		public double getLatencyTime(){
+		public static double getLatencyTime(){
 			int size = Terminated_Queue.size();
 			double[] latTimes = new double[size];
 			for (int i = 0; i < size; i++){
@@ -318,7 +318,7 @@ class OS {
 			return latencyDev;
 		}
 		//this method calculates, prints, and returns the standard deviation of the response times for all finished processes
-		public double getResponseTime(){
+		public static double getResponseTime(){
 			int size = Terminated_Queue.size();
 			double[] resTimes = new double[size];
 			for (int i = 0; i < size; i++){
@@ -326,11 +326,6 @@ class OS {
 			}
 			double responseDev = standardDev(resTimes);
 			return responseDev;
-		}
-		public void run(){
-			for(int i = 0; i < Ready_Queue.size(); i++){
-				
-			}
 		}
 		public static void fillReady(ArrayList<PCB> New_Queue){
 			while (New_Queue.get(0) != null) {
@@ -341,37 +336,62 @@ class OS {
 			}
 		}
 		public static void priorityFillReady(ArrayList<PCB> New_Queue){
-			//TODO create sort and fill by priority method
+			boolean sorted = false;
+			int n = New_Queue.size();
+	        PCB temp = null;
+	        while (!sorted){
+	    	sorted = true;
+		        for (int i = 0; i < n; i++) {
+		            for (int j = 1; j < (n - i); j++) {
+		                if (New_Queue.get(j-1).getPriority() < New_Queue.get(j).getPriority()) {
+		                	sorted = false;
+		                    temp = New_Queue.get(j - 1);
+		                    New_Queue.set(j - 1, New_Queue.get(j));
+		                    New_Queue.set(j,temp);
+		                }
+		            }
+		        }
+	        }
 		}
 		/*
 		 *\\\\\\\\\\\\\\\
 		 *\\MAIN METHOD\\
 		 * \\\\\\\\\\\\\\\
 		*/
-		 public static void main(String[] args){
+		 public static void main(String[] args)throws IOException{
 			 Scanner myScanner = new Scanner(System.in);
 			 System.out.println("Enter the filename: ");
 			 String filename = myScanner.nextLine();
-			 //TODO call file reading method here, make sure it is designed to create the new queue
+			 CreateProcess(filename);
 			 System.out.println("Which scheduling algorithm do you want to use: ");
 			 System.out.println("1.) First Come First Serve \n2.) Round-Robin \n3.) Static Priority");
 			 if(myScanner.nextInt() == 1){
-				 //TODO Fill ready queue here
+				 fillReady(New_Queue);
 				 for(int i = 0; i < Ready_Queue.size(); i++){
 					FCFS(Ready_Queue.get(i)); 
 				 }
+				 //post terminate calculations
+				 getLatencyTime();
+				 getResponseTime();
+				 
 			 }
 			 else if(myScanner.nextInt() == 2){
-				//TODO Fill ready queue here and sort it by priority
+				 priorityFillReady(New_Queue);
 				 for(int i = 0; i < Ready_Queue.size(); i++){
 					FCFS(Ready_Queue.get(i));
 				 }
+				 //post terminate calculations
+				 getLatencyTime();
+				 getResponseTime();
 			 }
 			 else if(myScanner.nextInt() == 3){
-				//TODO Fill ready queue here
+				 fillReady(New_Queue);
 				 for(int i = 0; i < Ready_Queue.size(); i++){
 					FCFS(Ready_Queue.get(i)); 
 				 }
+				 //post terminate calculations
+				 getLatencyTime();
+				 getResponseTime();
 			 }
 			 else{
 				 System.out.println("Invalid Selection: ");
