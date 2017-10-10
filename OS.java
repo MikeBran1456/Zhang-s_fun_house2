@@ -1,4 +1,4 @@
-import java.io.BufferedReader;
+
 import java.io.File;
 import java.io.*;
 import java.util.*; 
@@ -23,34 +23,48 @@ class OS {
 	// corresponding queue.
 	// Record the time of every operation for computing your latency and
 	// response
-	public void CreateProcess() throws NumberFormatException, IOException
+	public static void main(String[] args) throws NumberFormatException, IOException
+	{String file = "Test.txt";
+	System.out.println(CreateProcess(file));
+	}
+	public static PCB CreateProcess(String file) throws NumberFormatException, IOException
 	{
 		/* 
 		 * Reads the file 
 		 * separates the four fields in the text document
-		 * takes the IOBurst and turns it into an array
+		 * takes the IOBurst and turns it into an int array
 		 */
 		String line; 
-		BufferedReader read = new BufferedReader(new FileReader ("file"));
+		int ID= 0 ; 
+		int arrival=0;
+		int priority=0;
+		int [] IOBurstArray = new int[10];
+		PCB myPCB = new PCB(ID,arrival, priority,IOBurstArray); 
+		BufferedReader read = new BufferedReader(new FileReader (file));
 		while ((line = read.readLine()) != null)
-		{
+		{	
 			String[] words = line.split("," );
-			int ID = Integer.parseInt(words[0]); 
-			int arrival = Integer.parseInt(words[1]); 
-			int priority = Integer.parseInt(words[2]);  
+			ID = Integer.parseInt(words[0]); 
+			arrival = Integer.parseInt(words[1]); 
+			priority = Integer.parseInt(words[2]); 
 			String IOburst = words[3];
-			char[] IOArray = IOburst.toCharArray(); 
-			int [] IOBurstArray = null; 
+			char[] IOArray = IOburst.toCharArray();  
 			for (int i=0; i<IOburst.length(); i++)
 			{
 				
 				IOBurstArray[i] = Character.getNumericValue(IOArray[i]); 
+				
 			}
-			/*TODO split IOburst into integers and fill 
-			*an array and place as final argument in PCB constructor*/
-			PCB myPCB = new PCB(ID, arrival, priority, IOBurstArray);
+			/*
+			 * Test to make sure that the line parsing did what it is supposed to do
+			 *
+			System.out.println("the ID is: " + ID);
+			System.out.println("The arrival is :" + arrival);
+			System.out.println("the Priority is : " + priority);
+			System.out.println("The IOBurst is : "+ Arrays.toString(IOBurstArray));
+			*/
 		}
-		
+		return myPCB; 
 	}
 	
 	public void FCFS(PCB process) {
