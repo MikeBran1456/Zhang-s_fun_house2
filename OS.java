@@ -339,6 +339,23 @@ class OS {
 		}
 		public static void priorityFillReady(ArrayList<PCB> New_Queue){
 			//TODO create sort and fill by priority method
+			int n = New_Queue.size();
+			boolean sorted = false;
+			//Perform bubble sort
+	        PCB temp = null;
+	        while (!sorted){
+	    	sorted = true;
+		        for (int i = 0; i < n; i++) {
+		            for (int j = 1; j < (n - i); j++) {
+		                if (New_Queue.get(j-1).getPriority() < New_Queue.get(j).getPriority()) {
+		                	sorted = false;
+		                    temp = New_Queue.get(j - 1);
+		                    New_Queue.set(j - 1,New_Queue.get(j));
+		                    New_Queue.set(j, temp);
+		                }
+		            }
+		        }
+	        }
 		}
 		/*
 		 *\\\\\\\\\\\\\\\
