@@ -38,10 +38,17 @@ class OS {
 			int ID = Integer.parseInt(words[0]); 
 			int arrival = Integer.parseInt(words[1]); 
 			int priority = Integer.parseInt(words[2]);  
-			String IOburst = words[3]; 
+			String IOburst = words[3];
+			char[] IOArray = IOburst.toCharArray(); 
+			int [] IOBurstArray = null; 
+			for (int i=0; i<IOburst.length(); i++)
+			{
+				
+				IOBurstArray[i] = Character.getNumericValue(IOArray[i]); 
+			}
 			/*TODO split IOburst into integers and fill 
 			*an array and place as final argument in PCB constructor*/
-			PCB myPCB = new PCB(ID, arrival, priority, /* insert array here*/);
+			PCB myPCB = new PCB(ID, arrival, priority, IOBurstArray);
 		}
 		
 	}
