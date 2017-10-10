@@ -23,10 +23,7 @@ class OS {
 	// corresponding queue.
 	// Record the time of every operation for computing your latency and
 	// response
-	public static void main(String[] args) throws NumberFormatException, IOException
-	{String file = "Test.txt";
-	System.out.println(CreateProcess(file));
-	}
+
 	public static PCB CreateProcess(String file) throws NumberFormatException, IOException
 	{
 		/* 
