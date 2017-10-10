@@ -15,12 +15,14 @@ class PCB {
 	long Latency;
 	long Response;
 	//Constructor
-	public PCB (int processId, int arrivalTime, int[] code, int nextInstruction){
+	public PCB (int processId, int arrivalTime, int priority, int[] code){
 		this.ProcessID = processId;
 		this.ArrivalTime = arrivalTime;
-		this.State = "New";
+		this.Priority = priority;
 		this.Code = code;
-		this.PositionOfNextInstructionToExecute = nextInstruction;
+		this.State = "New";
+		this.PositionOfNextInstructionToExecute = 0;
+		this.ProcessCreated = System.currentTimeMillis();
 	}
 	//helpful return methods (can add more later)
 	public String getProcessState(){
@@ -32,13 +34,13 @@ class PCB {
 	}
 	
 	//time calcs
-	public void setProcessFinished(long time){
-		this.ProcessFinished = time;
+	public void setProcessFinished(){
+		this.ProcessFinished = System.currentTimeMillis();
 	}
 	
 	//time calcs
-	public void setProcessIOComplete(long time){
-		this.ProcessIOComplete = time;
+	public void setProcessIOComplete(){
+		this.ProcessIOComplete = System.currentTimeMillis();
 	}
 	
 	//time calcs
@@ -60,7 +62,7 @@ class PCB {
 		return this.PositionOfNextInstructionToExecute;
 	}
 	
-	public int[] getBurstSeq(){
+	public int[] getBurstSequence(){
 		return this.Code;
 	}
 	
