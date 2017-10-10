@@ -1,4 +1,4 @@
-
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.*;
 import java.util.*; 
@@ -23,45 +23,34 @@ class OS {
 	// corresponding queue.
 	// Record the time of every operation for computing your latency and
 	// response
-
-	public static PCB CreateProcess(String file) throws NumberFormatException, IOException
+	public void CreateProcess() throws NumberFormatException, IOException
 	{
 		/* 
 		 * Reads the file 
 		 * separates the four fields in the text document
-		 * takes the IOBurst and turns it into an int array
+		 * takes the IOBurst and turns it into an array
 		 */
 		String line; 
-		int ID= 0 ; 
-		int arrival=0;
-		int priority=0;
-		int [] IOBurstArray = new int[10];
-		PCB myPCB = new PCB(ID,arrival, priority,IOBurstArray); 
-		BufferedReader read = new BufferedReader(new FileReader (file));
+		BufferedReader read = new BufferedReader(new FileReader ("file"));
 		while ((line = read.readLine()) != null)
-		{	
+		{
 			String[] words = line.split("," );
-			ID = Integer.parseInt(words[0]); 
-			arrival = Integer.parseInt(words[1]); 
-			priority = Integer.parseInt(words[2]); 
+			int ID = Integer.parseInt(words[0]); 
+			int arrival = Integer.parseInt(words[1]); 
+			int priority = Integer.parseInt(words[2]);  
 			String IOburst = words[3];
-			char[] IOArray = IOburst.toCharArray();  
+			char[] IOArray = IOburst.toCharArray(); 
+			int [] IOBurstArray = null; 
 			for (int i=0; i<IOburst.length(); i++)
 			{
 				
 				IOBurstArray[i] = Character.getNumericValue(IOArray[i]); 
-				
 			}
-			/*
-			 * Test to make sure that the line parsing did what it is supposed to do
-			 *
-			System.out.println("the ID is: " + ID);
-			System.out.println("The arrival is :" + arrival);
-			System.out.println("the Priority is : " + priority);
-			System.out.println("The IOBurst is : "+ Arrays.toString(IOBurstArray));
-			*/
+			/*TODO split IOburst into integers and fill 
+			*an array and place as final argument in PCB constructor*/
+			PCB myPCB = new PCB(ID, arrival, priority, IOBurstArray);
 		}
-		return myPCB; 
+		
 	}
 	
 	public static void FCFS(PCB process) {
@@ -153,12 +142,16 @@ class OS {
 				System.out.println("CPU is not available, please wait...");
 
 			case "Running":// Process is now being executed
+				int n = 0;
 				System.out.println("Executing process...");
-				CPU.BubbleSort();
+				//if timeslice < process.getNextInstruction
+				if(timeslice < process.getBurstSequence()[process.getNextInstruction()]){
+					process.getBurstSequence()[process.getNextInstruction()] = process.getBurstSequence()[process.getNextInstruction()] - timeslice;
+					Circle(Ready_Queue);
+					state = "New";
+				}
 				Wait_Queue.add(Ready_Queue.get(0));
-				if (process.getNextInstruction() == process.getBurstSequence().length) {// Need to circle queue
-															// if timeslice is
-															// surpasses
+				if (process.getNextInstruction() == process.getBurstSequence().length) {// Need to circle qu
 					Wait_Queue.remove(0);
 					state = "Terminated";
 					process.setProcessState("Terminated");
@@ -206,13 +199,6 @@ class OS {
 			String state = "New";
 			switch (state) {
 			case "New":// Process being created
-				while (New_Queue.get(0) != null) {
-					Ready_Queue.add(New_Queue.get(0));// Moves all processes
-														// from new queue to
-														// ready queue
-					New_Queue.remove(0);// This needs to be sorted by priority
-				}
-
 				System.out.println("Creating process...");
 				state = "Ready";
 				process.setProcessState("Ready");
@@ -266,7 +252,7 @@ class OS {
 		System.out.println("All processes have finished executing");
 	}
 
-	public void Circle(ArrayList<PCB> Ready_Queue) {
+	public static void Circle(ArrayList<PCB> Ready_Queue) {
 		PCB head = Ready_Queue.get(0);
 		Ready_Queue.remove(0);
 		Ready_Queue.add(head);
@@ -339,23 +325,6 @@ class OS {
 		}
 		public static void priorityFillReady(ArrayList<PCB> New_Queue){
 			//TODO create sort and fill by priority method
-			int n = New_Queue.size();
-			boolean sorted = false;
-			//Perform bubble sort
-	        PCB temp = null;
-	        while (!sorted){
-	    	sorted = true;
-		        for (int i = 0; i < n; i++) {
-		            for (int j = 1; j < (n - i); j++) {
-		                if (New_Queue.get(j-1).getPriority() < New_Queue.get(j).getPriority()) {
-		                	sorted = false;
-		                    temp = New_Queue.get(j - 1);
-		                    New_Queue.set(j - 1,New_Queue.get(j));
-		                    New_Queue.set(j, temp);
-		                }
-		            }
-		        }
-	        }
 		}
 		/*
 		 *\\\\\\\\\\\\\\\
