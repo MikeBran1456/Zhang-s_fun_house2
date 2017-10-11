@@ -310,7 +310,8 @@ class OS {
 	}
 	public static void popShift(ArrayList<PCB> arrayList){
 		arrayList.remove(0);
-		for(int i = 1; i < arrayList.size(); i++){
+		int times = arrayList.size();
+		for(int i = 1; i < times; i++){
 			arrayList.add(i - 1, arrayList.get(i));
 		}
 	}
