@@ -8,10 +8,10 @@ class OS {
 	public IOdevice io;
 	public static boolean isCPUAvailable = true; // initially this had no value
 	// public ProcessTable process_Table;
-	public static ArrayList<PCB> New_Queue;
-	public static ArrayList<PCB> Ready_Queue;
-	public static ArrayList<PCB> Wait_Queue;
-	public static ArrayList<PCB> Terminated_Queue;
+	public static ArrayList<PCB> New_Queue = new ArrayList<PCB>();
+	public static ArrayList<PCB> Ready_Queue = new ArrayList<PCB>();
+	public static ArrayList<PCB> Wait_Queue = new ArrayList<PCB>();
+	public static ArrayList<PCB> Terminated_Queue = new ArrayList<PCB>();
 
 	// Read the txt input file, for each line, create a process and record its
 	// arrival
@@ -34,8 +34,8 @@ class OS {
 		int ID= 0 ; 
 		int arrival=0;
 		int priority=0;
-		int [] IOBurstArray = new int[10];
-		PCB myPCB = new PCB(ID,arrival, priority,IOBurstArray); 
+		
+		PCB myPCB = null; 
 		BufferedReader read = new BufferedReader(new FileReader (file));
 		
 		while ((line = read.readLine()) != null)
@@ -45,6 +45,7 @@ class OS {
 			arrival = Integer.parseInt(words[1]); 
 			priority = Integer.parseInt(words[2]); 
 			String IOburst = words[3];
+			int [] IOBurstArray = new int[IOburst.length()];
 			char[] IOArray = IOburst.toCharArray();  
 			for (int i=0; i<IOburst.length(); i++)
 			{
@@ -62,11 +63,12 @@ class OS {
 			System.out.println("the Priority is : " + priority);
 			System.out.println("The IOBurst is : "+ Arrays.toString(IOBurstArray));
 			*/
+			myPCB = new PCB(ID, arrival, priority, IOBurstArray);
+			New_Queue.add(myPCB);
 		}
-		if ((line = read.readLine()) != null)
-		{
-			New_Queue.add(myPCB); 
-		}
+		
+			 
+		
 		return myPCB; 
 	}
 	
@@ -90,13 +92,18 @@ class OS {
 					state = "Running";
 					process.setProcessState("Running");
 				}
+				else if(isCPUAvailable == false){
 				System.out.println("CPU is not available, please wait...");
-
+				}
+				
 			case "Running":// Process is now being executed
 				System.out.println("Executing process...");
 				isCPUAvailable = false;
+				for(int i = 0; i < process.getBurstSequence()[process.getNextInstruction()]; i++){
 				CPU.BubbleSort();
+				}
 				Wait_Queue.add(Ready_Queue.get(0));
+				popShift(Ready_Queue);
 				if (process.getNextInstruction() == process.getBurstSequence().length){
 					Wait_Queue.remove(0);
 					state = "Terminated";
@@ -109,7 +116,11 @@ class OS {
 				
 			case "Waiting":// Process is waiting on I/O
 				System.out.println("Waiting on I/O");
+				for(int i = 0; i < process.getBurstSequence()[process.getNextInstruction()]; i++){
 				IOdevice.BubbleSort();
+				}
+				Ready_Queue.add(Wait_Queue.get(0));
+				popShift(Wait_Queue);
 				if(firstIOCheck == true){
 					process.setProcessIOComplete();
 					firstIOCheck = false;
@@ -156,7 +167,9 @@ class OS {
 					state = "Running";
 					process.setProcessState("Running");
 				}
-				System.out.println("CPU is not available, please wait...");
+				else if(isCPUAvailable == false){
+					System.out.println("CPU is not available, please wait...");
+					}
 
 			case "Running":// Process is now being executed
 				int n = 0;
@@ -167,7 +180,11 @@ class OS {
 					Circle(Ready_Queue);
 					state = "New";
 				}
+				for(int i = 0; i < process.getBurstSequence()[process.getNextInstruction()]; i++){
+				CPU.BubbleSort();
+				}
 				Wait_Queue.add(Ready_Queue.get(0));
+				popShift(Ready_Queue);
 				if (process.getNextInstruction() == process.getBurstSequence().length) {// Need to circle qu
 					Wait_Queue.remove(0);
 					state = "Terminated";
@@ -179,7 +196,16 @@ class OS {
 
 			case "Waiting":// Process is waiting on I/O
 				System.out.println("Waiting on I/O");
+				if(timeslice < process.getBurstSequence()[process.getNextInstruction()]){
+					process.getBurstSequence()[process.getNextInstruction()] = process.getBurstSequence()[process.getNextInstruction()] - timeslice;
+					Circle(Ready_Queue);
+					state = "New";
+				}
+				for(int i = 0; i < process.getBurstSequence()[process.getNextInstruction()]; i++){
 				IOdevice.BubbleSort();
+				}
+				Ready_Queue.add(Wait_Queue.get(0));
+				popShift(Wait_Queue);
 				if(firstIOCheck == true){
 					process.setProcessIOComplete();
 					firstIOCheck = false;
@@ -226,12 +252,16 @@ class OS {
 					state = "Running";
 					process.setProcessState("Running");
 				}
-				System.out.println("CPU is not available, please wait...");
-
+				else if(isCPUAvailable == false){
+					System.out.println("CPU is not available, please wait...");
+					}
 			case "Running":// Process is now being executed
 				System.out.println("Executing process...");
+				for(int i = 0; i < process.getBurstSequence()[process.getNextInstruction()]; i++){
 				CPU.BubbleSort();
+				}
 				Wait_Queue.add(Ready_Queue.get(0));
+				popShift(Ready_Queue);
 				if (process.getNextInstruction() == process.getBurstSequence().length) {
 					Wait_Queue.remove(0);
 					state = "Terminated";
@@ -243,7 +273,11 @@ class OS {
 
 			case "Waiting":// Process is waiting on I/O
 				System.out.println("Waiting on I/O");
+				for(int i = 0; i < process.getBurstSequence()[process.getNextInstruction()]; i++){
 				IOdevice.BubbleSort();
+				}
+				Ready_Queue.add(Wait_Queue.get(0));
+				popShift(Wait_Queue);
 				if(firstIOCheck == true){
 					process.setProcessIOComplete();
 					firstIOCheck = false;
@@ -273,6 +307,12 @@ class OS {
 		PCB head = Ready_Queue.get(0);
 		Ready_Queue.remove(0);
 		Ready_Queue.add(head);
+	}
+	public static void popShift(ArrayList<PCB> arrayList){
+		arrayList.remove(0);
+		for(int i = 1; i < arrayList.size(); i++){
+			arrayList.add(i - 1, arrayList.get(i));
+		}
 	}
 	//this calculates average for a double array
 		public static double avg(double[] c){
@@ -328,11 +368,8 @@ class OS {
 			return responseDev;
 		}
 		public static void fillReady(ArrayList<PCB> New_Queue){
-			while (New_Queue.get(0) != null) {
-				Ready_Queue.add(New_Queue.get(0));// Moves all processes
-													// from New_Queue to
-													// Ready_Queue
-				New_Queue.remove(0);
+			for(int i = 0; i < New_Queue.size(); i++){
+				Ready_Queue.add(New_Queue.get(i));
 			}
 		}
 		public static void priorityFillReady(ArrayList<PCB> New_Queue){
@@ -378,7 +415,7 @@ class OS {
 			 else if(myScanner.nextInt() == 2){
 				 priorityFillReady(New_Queue);
 				 for(int i = 0; i < Ready_Queue.size(); i++){
-					FCFS(Ready_Queue.get(i));
+					RoundRobin(Ready_Queue.get(i));
 				 }
 				 //post terminate calculations
 				 getLatencyTime();
@@ -387,7 +424,7 @@ class OS {
 			 else if(myScanner.nextInt() == 3){
 				 fillReady(New_Queue);
 				 for(int i = 0; i < Ready_Queue.size(); i++){
-					FCFS(Ready_Queue.get(i)); 
+					staticPriority(Ready_Queue.get(i)); 
 				 }
 				 //post terminate calculations
 				 getLatencyTime();
